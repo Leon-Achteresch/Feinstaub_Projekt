@@ -1,5 +1,6 @@
 import urllib.request
 import datetime
+import glob
 
 BASE = "http://archive.luftdaten.info"
 
@@ -39,5 +40,16 @@ def download_days(number_of_days):
             
             save(data, f'sensor-data/{current_date}_{sensor}.csv')
 
+def getdays(): 
+    one_day = datetime.timedelta(days=1)
+    current_date = datetime.date.today()
+    days = 0
+    file = len(glob.glob(f'sensor-data\\{current_date}*.csv'))
+    while len(glob.glob(f'sensor-data\\{current_date}*.csv')) <1 and days <= 365:
+        days +=1
+        current_date = datetime.date.today() - days * one_day
+    return days
+
+
 if __name__ == '__main__':
-    download_days(365)
+    download_days(getdays())
