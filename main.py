@@ -1,5 +1,6 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton
+from PyQt6.QtWidgets import QApplication, QWidget,QLabel, QLineEdit, QVBoxLayout, QPushButton, QDateTimeEdit, QCalendarWidget
+from PyQt6.QtCore import Qt
 
 class MyForm(QWidget):
     def __init__(self):
@@ -21,7 +22,9 @@ class MyForm(QWidget):
         self.button.clicked.connect(self.submit_clicked)
         self.layout.addWidget(self.button)
 
-        # Fenster-Layout einrichten
+        self.calendar = QCalendarWidget()
+        self.layout.addWidget(self.calendar)
+
         self.setLayout(self.layout)
 
     def submit_clicked(self):
