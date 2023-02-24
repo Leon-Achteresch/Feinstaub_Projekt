@@ -16,7 +16,7 @@ def listCSV():
             res.append(path)
     return res
 list = listCSV()
-for i in list:
+for i in list: 
     with open(f'{path}\sensor-data\\' + i)as f:
         reader = csv.reader(f, delimiter=';')
         next(reader)
@@ -35,6 +35,13 @@ for i in list:
                 conn.commit()
             else:
                 print('error') 
+        #os.close(f'{path}\sensor-data\\' + i)
+        try:
+            #os.delete_file(f'{path}\sensor-data\\' + i)
+            f.close()
+            os.remove('sensor-data\\' + i)
+        except Exception as e: 
+            print(e)
 conn.close()        
 
 
