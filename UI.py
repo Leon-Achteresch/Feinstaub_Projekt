@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QCalendarWidget, QLabel, QFrame
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QCalendarWidget, QLabel, QFrame, QProgressBar
 from PyQt6 import QtCore
 from PyQt6 import QtGui
 from PyQt6.QtGui import QFont
@@ -44,7 +44,11 @@ class MyForm(QWidget):
 
         # Label für die Ausgabe erstellen
         self.ausgabe_label = QLabel("")
-        right_layout.addWidget(self.ausgabe_label)
+        self.layout.addWidget(self.ausgabe_label)
+
+        self.progress_bar = QProgressBar(self)
+        self.progress_bar.setValue(15)
+        self.layout.addWidget(self.progress_bar, 0, QtCore.Qt.AlignmentFlag.AlignBottom)
 
         # Grafik-Layout erstellen
         self.graph_layout = QVBoxLayout()
@@ -54,7 +58,7 @@ class MyForm(QWidget):
         self.graph_layout.addWidget(self.graph)
 
         # Grafik-Layout zum rechten Layout hinzufügen
-        right_layout.addLayout(self.graph_layout)
+        right_layout.addLayout(self.graph)
 
         # Rechtes Layout zur Gesamt-LayoutBox hinzufügen
         self.layout.addLayout(right_layout)
