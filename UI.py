@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QCalendarWidget, QLabel, QFrame, QProgressBar
+from PyQt6.QtWidgets import QApplication, QComboBox, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QCalendarWidget, QLabel, QFrame, QProgressBar
 from PyQt6 import QtCore
 from PyQt6 import QtGui
 from PyQt6.QtGui import QFont
@@ -16,7 +16,10 @@ class MyForm(QWidget):
         self.setWindowIcon(QtGui.QIcon('tbs1.png'))
         self.setWindowTitle("Feinstaub Projekt")
 
-        self.layout = QHBoxLayout()
+        self.oben = QHBoxLayout()
+        self.unten = QHBoxLayout()
+
+        self.layout = QVBoxLayout()
 
         # Linkes Layout erstellen
         left_layout = QVBoxLayout()
@@ -37,18 +40,19 @@ class MyForm(QWidget):
         left_layout.addWidget(self.button)
 
         # Linkes Layout zur Gesamt-LayoutBox hinzufügen
-        self.layout.addLayout(left_layout)
+        self.oben.addLayout(left_layout)
 
         # Rechtes Layout erstellen
         right_layout = QVBoxLayout()
 
-        # Label für die Ausgabe erstellen
-        self.ausgabe_label = QLabel("")
-        self.layout.addWidget(self.ausgabe_label)
+        self.label = QLabel("Aktualisiere Daten")
+        font = QFont("Roboto", 10)
+        self.label.setFont(font)
+        self.unten.addWidget(self.label)
 
         self.progress_bar = QProgressBar(self)
         self.progress_bar.setValue(15)
-        self.layout.addWidget(self.progress_bar, 0, QtCore.Qt.AlignmentFlag.AlignBottom)
+        self.unten.addWidget(self.progress_bar, 1, QtCore.Qt.AlignmentFlag.AlignBottom)
 
         # Grafik-Layout erstellen
         self.graph_layout = QVBoxLayout()
@@ -57,17 +61,26 @@ class MyForm(QWidget):
         self.graph = Graph()
         self.graph_layout.addWidget(self.graph)
 
+        self.Combo_Box = QComboBox()
+        self.Combo_Box.addItem("as2d")
+        self.Combo_Box.addItem("a1s2d")
+        self.Combo_Box.addItem("asd3")
+        self.Combo_Box.addItem("as5d")
+        self.Combo_Box.addItem("as611d")
+        right_layout.addWidget(self.Combo_Box)
+
         # Grafik-Layout zum rechten Layout hinzufügen
-        right_layout.addLayout(self.graph)
+        right_layout.addLayout(self.graph_layout)
 
         # Rechtes Layout zur Gesamt-LayoutBox hinzufügen
-        self.layout.addLayout(right_layout)
+        self.oben.addLayout(right_layout)
 
+        self.layout.addLayout(self.oben)
+        self.layout.addLayout(self.unten)
         self.setLayout(self.layout)
 
     def suchen_clicked(self):
         datum = self.calendar.selectedDate().toString("yyyy-MM-dd")
-        self.ausgabe_label.setText(f"Das ausgewählte Datum ist {datum}.")
         try:
             log.writelog("Datum ausgewählt: " + datum)
         except Exception as e:
