@@ -3,6 +3,7 @@ import csv
 import os
 import pathlib
 path = pathlib.Path('test.py').parent.resolve()
+
 def listCSV():
     path = pathlib.Path('test.py').parent.resolve()
     dir_path = f'{path}\sensor-data\\'
@@ -11,6 +12,7 @@ def listCSV():
         if os.path.isfile(os.path.join(dir_path, path)):
             res.append(path)
     return res
+
 def importtoDB(c,conn):
     list = listCSV()
     for i in list: 
@@ -32,9 +34,7 @@ def importtoDB(c,conn):
                     conn.commit()
                 else:
                     print('error') 
-            #os.close(f'{path}\sensor-data\\' + i)
             try:
-                #os.delete_file(f'{path}\sensor-data\\' + i)
                 f.close()
                 os.remove('sensor-data\\' + i)
             except Exception as e: 

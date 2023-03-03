@@ -55,7 +55,7 @@ class MyForm(QWidget):
         self.unten.addWidget(self.label)
 
         self.progress_bar = QProgressBar(self)
-        self.progress_bar.setValue(15)
+
         self.unten.addWidget(self.progress_bar, 1, QtCore.Qt.AlignmentFlag.AlignBottom)
 
         # Grafik-Layout erstellen
@@ -63,7 +63,7 @@ class MyForm(QWidget):
 
         # Graph-Klasse erstellen und dem Layout hinzufügen
         self.graph = Graph()
-        self.graph_layout.addItem(self.graph)
+        self.graph_layout.addWidget(self.graph)
 
         self.Combo_Box = QComboBox()
         self.Combo_Box.addItem("Temperatur")
@@ -90,10 +90,6 @@ class MyForm(QWidget):
         self.download_thread = threading.Thread(target=self.download_data)
         self.download_thread.start()
 
-        # Thread für den Import erstellen und starten
-        self.import_thread = threading.Thread(target=self.import_data)
-        self.import_thread.start()
-
     def suchen_clicked(self):
         datum = self.calendar.selectedDate().toString("yyyy-MM-dd")
         try:
@@ -103,17 +99,21 @@ class MyForm(QWidget):
         x = SQL_Select.SELECT(datum,self.Combo_Box.currentText(),'DATUM')
         y = SQL_Select.SELECT(datum,self.Combo_Box.currentText(),'WERT')
         #download.checkdate(datum)
-        self.graph.plot(x,y)
+        #self.graph.plot(x,y)
 
-    def import_data(self):
-        conn = sqlite3.connect("sensor-data.db")
-        c = conn.cursor()
-        SQL_Import.importtoDB(c,conn)
     def download_data(self):
         conn = sqlite3.connect("sensor-data.db")
         c = conn.cursor()
-        download.download_days(download.getdays(c,conn))
-
+        days_to_download = download.getdays(c, conn)
+        self.progress_bar.setMaximum(days_to_download)
+        if days_to_download == 0: 
+            self.progress_bar.hide()
+        else:
+            download.download_days(days_to_download)
+            xlen = len(SQL_Import.listCSV())
+            self.progress_bar.setValue(days_to_download - xlen)
+            SQL_Import.importtoDB(c, conn)
+           
 # Klasse für die Graphik
 class Graph(QFrame):
     def __init__(self):
@@ -123,8 +123,8 @@ class Graph(QFrame):
         plt.xlabel("Pollution")
         plt.ylabel("Time")
         plt.title("Pollution Data")
-        #x = SQL_Select.SELECT(datum,self.Combo_Box.currentText(),'DATUM')
-        #y = SQL_Select.SELECT(datum,self.Combo_Box.currentText(),'WERT')
+        x = [1,3,5,8]
+        y = [2,3,4,5]
         plt.plot(x,y)
 
         self.figure = Figure(figsize=(5, 4), dpi=100)
@@ -136,9 +136,10 @@ class Graph(QFrame):
         self.setLayout(layout)
 
     def plot(self,x,y):
-        self.axes.clear()
-        self.axes.plot([x,y])
-        self.canvas.draw()
+        # self.axes.clear()
+        # self.axes.plot([x,y])
+        # self.canvas.draw()
+        plt.plot(x,y)
     def getFigure(self):
         return self.figure
     def draw(self):
