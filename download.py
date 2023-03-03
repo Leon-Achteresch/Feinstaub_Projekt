@@ -3,9 +3,6 @@ import datetime
 import glob
 import sqlite3
 
-conn = sqlite3.connect("sensor-data.db")
-c = conn.cursor()
-
 BASE = "http://archive.luftdaten.info"
 
 def download(url):
@@ -44,7 +41,7 @@ def download_days(number_of_days):
             
             save(data, f'sensor-data/{current_date}_{sensor}.csv')
 
-def getdays(): 
+def getdays(c,conn): 
     one_day = datetime.timedelta(days=1)
     current_date = datetime.date.today()
     days = 0
@@ -90,7 +87,5 @@ def getdays():
     return days
 
 
-if __name__ == '__main__':
-    download_days(getdays())
-    conn.close()
-    
+# if __name__ == '__main__':
+#     download_days(getdays())
