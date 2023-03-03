@@ -59,7 +59,7 @@ class MyForm(QWidget):
 
         # Graph-Klasse erstellen und dem Layout hinzufügen
         self.graph = Graph()
-        self.graph_layout.addWidget(self.graph)
+        self.graph_layout.addItem(self.graph)
 
         self.Combo_Box = QComboBox()
         self.Combo_Box.addItem("as2d")
@@ -92,6 +92,14 @@ class MyForm(QWidget):
 class Graph(QFrame):
     def __init__(self):
         super().__init__()
+        plt.style.use('ggplot')
+        plt.axis('scaled')
+        plt.xlabel("Pollution")
+        plt.ylabel("Time")
+        plt.title("Pollution Data")
+        x = [1, 2, 3, 4, 10]
+        y = [3, 5, 2, 7, 22]
+        plt.plot(x,y)
 
         self.figure = Figure(figsize=(5, 4), dpi=100)
         self.canvas = FigureCanvas(self.figure)
@@ -102,12 +110,15 @@ class Graph(QFrame):
         self.setLayout(layout)
 
     def plot(self):
-        x = [1, 2, 3, 4, 5]
-        y = [3, 5, 2, 7, 1]
+        x = [1, 2, 3, 4, 10]
+        y = [3, 5, 2, 7, 22]
         self.axes.clear()
-        self.axes.bar(x, y)
+        self.axes.plot([x,y])
         self.canvas.draw()
-
+    def getFigure(self):
+        return self.figure
+    def draw(self):
+        self.canvas.draw()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

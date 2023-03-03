@@ -1,9 +1,6 @@
 import sys
-import matplotlib
 from PyQt6.QtWidgets import QApplication, QTimeEdit,QWidget,QLabel, QLineEdit, QVBoxLayout, QPushButton, QDateTimeEdit, QCalendarWidget
 from PyQt6.QtCore import Qt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-matplotlib.use('QtAgg')
 
 class MyForm(QWidget):
     def __init__(self):
