@@ -13,6 +13,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
+conn2 = sqlite3.connect("sensor-data.db")
+c2 = conn2.cursor()
 
 class MyForm(QWidget):
     def __init__(self):
@@ -54,9 +56,9 @@ class MyForm(QWidget):
         self.label.setFont(font)
         self.unten.addWidget(self.label)
 
-        self.progress_bar = QProgressBar(self)
+        #self.progress_bar = QProgressBar(self)
 
-        self.unten.addWidget(self.progress_bar, 1, QtCore.Qt.AlignmentFlag.AlignBottom)
+       # self.unten.addWidget(self.progress_bar, 1, QtCore.Qt.AlignmentFlag.AlignBottom)
 
         # Grafik-Layout erstellen
         self.graph_layout = QVBoxLayout()
@@ -98,20 +100,20 @@ class MyForm(QWidget):
             print("Fehler beim Schreiben in die Log-Datei:", e)
         x = SQL_Select.SELECT(datum,self.Combo_Box.currentText(),'DATUM')
         y = SQL_Select.SELECT(datum,self.Combo_Box.currentText(),'WERT')
-        #download.checkdate(datum)
+        download.checkdate(datum, c2, conn2)
         #self.graph.plot(x,y)
 
     def download_data(self):
         conn = sqlite3.connect("sensor-data.db")
         c = conn.cursor()
         days_to_download = download.getdays(c, conn)
-        self.progress_bar.setMaximum(days_to_download)
+        #self.progress_bar.setMaximum(days_to_download)
         if days_to_download == 0: 
             self.progress_bar.hide()
         else:
             download.download_days(days_to_download)
             xlen = len(SQL_Import.listCSV())
-            self.progress_bar.setValue(days_to_download - xlen)
+            #self.progress_bar.setValue(days_to_download - xlen)
             SQL_Import.importtoDB(c, conn)
            
 # Klasse für die Graphik
@@ -149,5 +151,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     form = MyForm()
     form.show()
+    #download.download_days(download.getdays(c, conn), c, conn)
+    SQL_Import.importtoDB(c2, conn2)
     sys.exit(app.exec())
          

@@ -9,5 +9,6 @@ def writelog(message):
             file.write("-------\n")
     
     with open("log.txt", "a") as file:
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         file.write(current_time + "|||" + str(message) + "\n")
         file.write("-------\n")

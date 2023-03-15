@@ -86,6 +86,22 @@ def getdays(c,conn):
 
     return days
 
+#Es wird überpeüft, ob der ausgewähle Tag i GUI in der Datenbank ist, wenn nicht wird er heruntergeladen
+def checkdate(date,c,conn):
+    c.execute("SELECT COUNT(timestamp) FROM DHT22 WHERE TIMESTAMP LIKE :KEY", {'KEY': date + '%'})  
+    conn.commit()
+    record = c.fetchone()
+    base_url = f'{BASE}/{date}/{date}'
+    if record[0] == 0:
+        url = f'{base_url}_sds011_sensor_3659.csv'
+        data = str(download(url), encoding='UTF-8')
+        save(data, f'sensor-data/{date}_sds011_sensor_3659.csv')
+        url = f'{base_url}_dht22_sensor_3660.csv'
+        data = str(download(url), encoding='UTF-8')
+        save(data, f'sensor-data/{date}_dht22_sensor_3660.csv')
+        SQL_Import.importtoDB()
+#-------------------------------------------------------------------------------
+
 
 # if __name__ == '__main__':
 #     download_days(getdays())
