@@ -13,7 +13,7 @@ def listCSV():
             res.append(path)
     return res
 
-def importtoDB(c,conn):
+def importtoDB(c,conn,label):
     list = listCSV()
     for i in list: 
         with open(f'{path}\sensor-data\\' + i)as f:
@@ -37,5 +37,6 @@ def importtoDB(c,conn):
             try:
                 f.close()
                 os.remove('sensor-data\\' + i)
+                label.setText(f"Daten für {i[:10]} aktualisiert") 
             except Exception as e: 
                 print(e)
