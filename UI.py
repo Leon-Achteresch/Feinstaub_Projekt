@@ -137,11 +137,11 @@ class MyForm(QWidget):
 
     def suchen_clicked(self):
         datum = self.calendar.selectedDate().toString("yyyy-MM-dd")
+        selected_value = self.Combo_Box.currentText()
         try:
-            log.writelog("Datum ausgewählt: " + datum)
+            log.writelog("Datum ausgewählt: " + datum, selected_value)
         except Exception as e:
             print("Fehler beim Schreiben in die Log-Datei:", e)
-        selected_value = self.Combo_Box.currentText()
         x = SQL_Select.SELECT(datum, selected_value, 'DATUM')
         y = SQL_Select.SELECT(datum, selected_value, 'WERT')
 
