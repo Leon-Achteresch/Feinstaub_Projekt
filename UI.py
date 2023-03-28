@@ -45,6 +45,22 @@ class MyForm(QWidget):
         # Button für Suche erstellen
         self.button = QPushButton("Suche")
         self.button.clicked.connect(self.suchen_clicked)
+        self.button.setStyleSheet("\n"
+        "  appearance: none;\n"
+        "  backface-visibility: hidden;\n"
+        "  background-color: #2f80ed;\n"
+        "  border-radius: 10px;\n"
+        "  color: #fff;\n"
+        "  height: 50px;\n"
+        "  line-height: 1.5;\n"
+        "  outline: none;\n"
+        "  overflow: hidden;\n"
+        "  user-select: none;\n"
+        "  -webkit-user-select: none;\n"
+        "  touch-action: manipulation;\n"
+        "  vertical-align: top;\n"
+        "  white-space: nowrap;\n"
+        "")
         left_layout.addWidget(self.button)
 
         # Linkes Layout zur Gesamt-LayoutBox hinzufügen
@@ -73,8 +89,37 @@ class MyForm(QWidget):
         self.Combo_Box.addItem("Gesamt")
         self.Combo_Box.setItemIcon(1, QIcon("assets\images\interface-weather-rain-drop.png"))
         self.Combo_Box.setItemIcon(3, QIcon("assets\images\co2-icon.svg"))
+        self.Combo_Box.setStyleSheet("QComboBox {\n"
+        "  background-color: #FFFFFF;\n"
+        "  border: 1px solid #CCCCCC;\n"
+        "  border-radius: 3px;\n"
+        "  padding: 5px;\n"
+        "  min-width: 6em;\n"
+        "  font-size: 14px;\n"
+        "}\n"
+        "\n"
+        "QComboBox::drop-down {\n"
+        "  subcontrol-origin: padding;\n"
+        "  subcontrol-position: top right;\n"
+        "  width: 15px;\n"
+        "  border-left-width: 1px;\n"
+        "  border-left-color: #CCCCCC;\n"
+        "  border-left-style: solid;\n"
+        "  border-top-right-radius: 3px;\n"
+        "  border-bottom-right-radius: 3px;\n"
+        "  background-color: #FFFFFF;\n"
+        "}\n"
+        "\n"
+        "QComboBox::down-arrow {\n"
+        "  image: url(\"down_arrow.png\");\n"
+        "  width: 10px;\n"
+        "  height: 10px;\n"
+        "  padding-right: 5px;\n"
+        "}\n"
+        "")
 
         right_layout.addWidget(self.Combo_Box)
+        
 
         # Grafik-Layout zum rechten Layout hinzufügen
         right_layout.addLayout(self.graph_layout)
