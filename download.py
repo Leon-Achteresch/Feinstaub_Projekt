@@ -2,6 +2,7 @@ import urllib.request
 import datetime
 import glob
 import sqlite3
+import SQL_Import
 
 BASE = "http://archive.luftdaten.info"
 
@@ -99,8 +100,10 @@ def checkdate(date,c,conn):
         url = f'{base_url}_dht22_sensor_3660.csv'
         data = str(download(url), encoding='UTF-8')
         save(data, f'sensor-data/{date}_dht22_sensor_3660.csv')
-        SQL_Import.importtoDB()
+        SQL_Import.importtoDB(c, conn)
 #-------------------------------------------------------------------------------
+
+#def getavg():
 
 
 # if __name__ == '__main__':
