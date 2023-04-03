@@ -2,7 +2,7 @@ import urllib.request
 import datetime
 import glob
 import sqlite3
-import SQL_Import
+import SQL
 
 BASE = "http://archive.luftdaten.info"
 
@@ -26,6 +26,10 @@ def save(data, filename):
 def download_days(number_of_days):
     'Download and save data for a given number of days.'
     one_day = datetime.timedelta(days=1)
+    import os
+
+    if not os.path.exists('sensor-data'):
+        os.makedirs('sensor-data')
 
     for i in range(1, number_of_days + 1): # no data for today
         current_date = datetime.date.today() - i * one_day
@@ -100,7 +104,7 @@ def checkdate(date,c,conn):
         url = f'{base_url}_dht22_sensor_3660.csv'
         data = str(download(url), encoding='UTF-8')
         save(data, f'sensor-data/{date}_dht22_sensor_3660.csv')
-        SQL_Import.importtoDB(c, conn)
+        SQL.importtoDB(c, conn, data)
 #-------------------------------------------------------------------------------
 
 #def getavg():

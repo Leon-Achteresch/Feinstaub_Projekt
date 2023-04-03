@@ -1,15 +1,15 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QComboBox, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QCalendarWidget, QLabel, QFrame, QProgressBar
+from PyQt6.QtWidgets import QApplication, QComboBox, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QCalendarWidget, QLabel, QFrame, QProgressBar,QGraphicsDropShadowEffect
 from PyQt6 import QtCore
 from PyQt6 import QtGui
-from PyQt6.QtGui import QFont, QIcon
+from PyQt6.QtGui import QFont, QIcon, QColor
 from PyQt6.QtWidgets import QProgressBar
 import log
 import sqlite3
 import threading
 import download
-import SQL_Import
-import SQL_Select
+import SQL
+#import SQL_Select
 from pyqtgraph import PlotWidget, AxisItem
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -23,7 +23,11 @@ class MyForm(QWidget):
         super().__init__()
         self.setWindowIcon(QtGui.QIcon('assets\images\hippie-marijuana-weed.svg'))
         self.setWindowTitle("Feinstaub Projekt")
-
+        
+        shadow_effect = QGraphicsDropShadowEffect()
+        shadow_effect.setBlurRadius(10)
+        shadow_effect.setColor(QColor(0, 0, 0, 80))
+        shadow_effect.setOffset(0, 0)
         self.oben = QHBoxLayout()
         self.unten = QHBoxLayout()
 
@@ -40,26 +44,49 @@ class MyForm(QWidget):
 
         # Kalender erstellen
         self.calendar = QCalendarWidget()
+        self.calendar.setGraphicsEffect(shadow_effect)
+        self.calendar.setStyleSheet("QCalendarWidget {"
+                             "  border: none;"
+                             "  font-family: 'Roboto', sans-serif;"
+                             "  font-size: 16px;"
+                             "  border-radius: 10px;"
+                             "}"
+                             ""
+                             "QCalendarWidget QAbstractItemView {"
+                             "  selection-background-color: #db1414;"
+                             "  background-color: #fff;"
+                             "  border: none;"
+                             "  border-radius: 10px;"
+                             "  color: #333;"
+                             "}"
+                             "")
+
         left_layout.addWidget(self.calendar)
 
         # Button für Suche erstellen
         self.button = QPushButton("Suche")
         self.button.clicked.connect(self.suchen_clicked)
-        self.button.setStyleSheet("\n"
-        "  appearance: none;\n"
-        "  backface-visibility: hidden;\n"
-        "  background-color: #2f80ed;\n"
-        "  border-radius: 10px;\n"
-        "  color: #fff;\n"
-        "  height: 50px;\n"
-        "  line-height: 1.5;\n"
-        "  outline: none;\n"
-        "  overflow: hidden;\n"
-        "  user-select: none;\n"
-        "  -webkit-user-select: none;\n"
-        "  touch-action: manipulation;\n"
-        "  vertical-align: top;\n"
-        "  white-space: nowrap;\n"
+        self.button.setGraphicsEffect(shadow_effect)
+        self.button.setStyleSheet(""
+        " QPushButton {"
+        "  background-color: #2f80ed;"
+        "  border-radius: 10px;"
+        "  color: #fff;"
+        "  height: 50px;"
+        "  line-height: 1.5;"
+        "  outline: none;"
+        "  vertical-align: top;"
+        "  font-size: 16px;"
+        "  font-family: 'Roboto', sans-serif;"
+        "  white-space: nowrap;"
+        "}"
+        ""
+        "  QPushButton:hover {"
+        "    background-color: #3b8cf3;"
+        "  }"
+        "  QPushButton:pressed {"
+        "    background-color: #2567c9;"
+        "  }"
         "")
         left_layout.addWidget(self.button)
 
@@ -82,13 +109,17 @@ class MyForm(QWidget):
         self.graph_layout.addWidget(self.line_graph)
 
         self.Combo_Box = QComboBox()
+        self.Combo_Box.setGraphicsEffect(shadow_effect)
         self.Combo_Box.addItem("Temperatur")
         self.Combo_Box.addItem("Luftfeuchtigkeit")
         self.Combo_Box.addItem("P1")
         self.Combo_Box.addItem("P2")
         self.Combo_Box.addItem("Gesamt")
-        self.Combo_Box.setItemIcon(1, QIcon("assets\images\interface-weather-rain-drop.png"))
+        self.Combo_Box.setItemIcon(0, QIcon("assets\images\interface-weather-temperature-hot.png"))
+        self.Combo_Box.setItemIcon(1, QIcon("assets\images\interface-weather-wind.png"))
+        self.Combo_Box.setItemIcon(2, QIcon("assets\images\interface-weather-rain-drop.png"))
         self.Combo_Box.setItemIcon(3, QIcon("assets\images\co2-icon.svg"))
+        self.Combo_Box.setItemIcon(4, QIcon("assets\images\hippie-marijuana-weed.svg"))
         self.Combo_Box.setStyleSheet("QComboBox {\n"
         "  background-color: #FFFFFF;\n"
         "  border: 1px solid #CCCCCC;\n"
@@ -111,16 +142,14 @@ class MyForm(QWidget):
         "}\n"
         "\n"
         "QComboBox::down-arrow {\n"
-        "  image: url(\"down_arrow.png\");\n"
-        "  width: 10px;\n"
-        "  height: 10px;\n"
-        "  padding-right: 5px;\n"
+        "  image: url('assets/images/interface-arrows-button-down.png');\n"
+        "  width: 14px;\n"
+        "  height: 14px;\n"
+        "  padding-right: 1px;\n"
         "}\n"
         "")
-
         right_layout.addWidget(self.Combo_Box)
         
-
         # Grafik-Layout zum rechten Layout hinzufügen
         right_layout.addLayout(self.graph_layout)
 
@@ -142,11 +171,13 @@ class MyForm(QWidget):
             log.writelog("Datum ausgewählt: " + datum, selected_value)
         except Exception as e:
             print("Fehler beim Schreiben in die Log-Datei:", e)
-        x = SQL_Select.SELECT(datum, selected_value, 'DATUM')
-        y = SQL_Select.SELECT(datum, selected_value, 'WERT')
-
-        self.line_graph.plot(x, y)
-
+        x = SQL.SELECT(datum, selected_value, 'DATUM')
+        y = SQL.SELECT(datum, selected_value, 'WERT')
+        if not x or not y:
+            print("Die Listen sind leer.")
+        else:
+            self.line_graph.plot(x, y)
+            
     def download_data(self):
         conn = sqlite3.connect("sensor-data.db")
         c = conn.cursor()
@@ -154,9 +185,9 @@ class MyForm(QWidget):
         if days_to_download == 0: 
             self.label.hide()
         else:
-            self.label.setText("Download Data")
-            download.download_days(days_to_download)
-            SQL_Import.importtoDB(c, conn, self.label)
+            self.label.setText("Download Data...")
+            download.download_days(0)
+            SQL.importtoDB(c, conn, self.label)
             
 class LineGraph(PlotWidget):
     def __init__(self, parent=None):
