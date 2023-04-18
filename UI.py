@@ -11,9 +11,8 @@ import download
 import SQL
 #import SQL_Select
 from pyqtgraph import PlotWidget, AxisItem
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
+from datetime import datetime, timedelta
+import pyqtgraph as pg
 
 conn2 = sqlite3.connect("sensor-data.db")
 c2 = conn2.cursor()
@@ -167,6 +166,13 @@ class MyForm(QWidget):
     def suchen_clicked(self):
         datum = self.calendar.selectedDate().toString("yyyy-MM-dd")
         selected_value = self.Combo_Box.currentText()
+        if selected_value == 'Temperatur':
+            selected_value='temp'
+        elif selected_value == 'Luftfeuchtigkeit':
+            selected_value='feuchtigkeit'
+        elif selected_value == 'Gesamt':
+            selected_value='feuchtigkeit'
+
         try:
             log.writelog("Datum ausgewählt: " + datum, selected_value)
         except Exception as e:
@@ -195,7 +201,23 @@ class LineGraph(PlotWidget):
 
     def plot(self, x, y):
         self.clear()
-        self.plotItem.plot(x, y, pen='r')
+        
+        axis = pg.AxisItem(orientation='bottom')
+        tick_values = []
+        tick_labels = []
+        time_format = '%H:%M:%S'
+        for timestamp in x:
+            dt = datetime.strptime(timestamp, time_format)
+            tick_values.append((dt - datetime(dt.year, dt.month, dt.day)).total_seconds())
+            tick_labels.append(dt.strftime('%H:%M'))
+        axis.setTicks([list(zip(tick_values, tick_labels))])
+        self.setAxisItems({'bottom': axis})
+
+        x = tick_values
+        #self.plotItem.setDownsampling(mode='peak')
+        #self.plotItem.setClipToView(True)
+        self.plotItem.plot(x, y, fillLevel=(True))
+        self.plotItem.vb.setLimits(xMin=min(x)-5, xMax=max(x)+5, yMin=min(y)-5, yMax=max(y)+5)
         self.setTitle('Sensor Data')
 
     def clear(self):

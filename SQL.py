@@ -46,7 +46,7 @@ def SELECT(DATUM,WERT,Liste):
     conn = sqlite3.connect("sensor-data.db")
     c = conn.cursor()
     if WERT == "feuchtigkeit" or WERT == "temp":
-        c.execute("SELECT timestamp, {} FROM DHT22 WHERE timestamp LIKE ?".format(WERT), (DATUM + '%',))
+        c.execute("SELECT substr(timestamp,12,10), {} FROM DHT22 WHERE timestamp LIKE ?".format(WERT), (DATUM + '%',))
     elif WERT == "P1" or WERT == "P2":
         c.execute("SELECT substr(timestamp,12,10), {} FROM SDS011 WHERE timestamp LIKE ?".format(WERT), (DATUM + '%',))
     else:
