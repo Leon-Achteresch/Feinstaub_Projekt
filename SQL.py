@@ -62,4 +62,18 @@ def SELECT(DATUM,WERT,Liste):
     elif Liste == 'WERT':
         return wert_liste
     else:
-        print('ERROR: Keine Liste ausgewählt')    
+        print('ERROR: Keine Liste ausgewählt')   
+        
+        
+def sql_min(DATUM,value):
+    conn = sqlite3.connect("sensor-data.db")
+    c = conn.cursor()
+    
+    if value == "feuchtigkeit" or value == "temp":
+        c.execute(f"SELECT MIN({value}) as MIN, MAX({value}) as MAX, AVG({value}) as AVG FROM DHT22 WHERE timestamp LIKE ?".format(value), (DATUM + '%',))
+    elif value == "P1" or value == "P2":
+        c.execute(f"SELECT MIN({value}) as MIN, MAX({value}) as MAX, AVG({value}) as AVG FROM SDS011 WHERE timestamp LIKE ?".format(value), (DATUM + '%',))
+    else:
+        print("Ungültiger WERT")
+        
+    return(c.fetchone())
