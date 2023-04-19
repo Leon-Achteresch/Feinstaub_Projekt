@@ -4,7 +4,7 @@ import glob
 import sqlite3
 import SQL
 
-BASE = "http://archive.luftdaten.info"
+BASE = "https://archive.sensor.community"
 
 def download(url):
     """
@@ -33,7 +33,14 @@ def download_days(number_of_days):
 
     for i in range(1, number_of_days + 1): # no data for today
         current_date = datetime.date.today() - i * one_day
-        base_url = f'{BASE}/{current_date}/{current_date}'
+        temp = f'{current_date}'
+        now = datetime.date.today()
+        nowstr = f'{now}' 
+        if temp[0:4] == nowstr[0:4]:
+            base_url = f'{BASE}/{current_date}/{current_date}'
+        else:
+            base_url = f'{BASE}/'+ temp[0:4] + f'/{current_date}/{current_date}'
+
 
         for sensor in ['sds011_sensor_3659', 'dht22_sensor_3660']:
             url = f'{base_url}_{sensor}.csv'
@@ -96,7 +103,12 @@ def checkdate(date,c,conn):
     c.execute("SELECT COUNT(timestamp) FROM DHT22 WHERE TIMESTAMP LIKE :KEY", {'KEY': date + '%'})  
     conn.commit()
     record = c.fetchone()
-    base_url = f'{BASE}/{date}/{date}'
+    now = datetime.date.today()
+    nowstr = f'{now}' 
+    if date == nowstr[0:4]:
+        base_url = f'{BASE}/{date}/{date}'
+    else:
+        base_url = f'{BASE}/'+ date[0:4] + f'/{date}/{date}'
     if record[0] == 0:
         url = f'{base_url}_sds011_sensor_3659.csv'
         data = str(download(url), encoding='UTF-8')
@@ -109,6 +121,5 @@ def checkdate(date,c,conn):
 
 #def getavg():
 
-
-# if __name__ == '__main__':
-#     download_days(getdays())
+#if __name__ == '__main__':
+#    download_days(365)
