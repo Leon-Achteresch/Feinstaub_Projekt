@@ -27,6 +27,7 @@ class MyForm(QWidget):
         shadow_effect.setBlurRadius(10)
         shadow_effect.setColor(QColor(0, 0, 0, 80))
         shadow_effect.setOffset(0, 0)
+        
         self.oben = QHBoxLayout()
         self.unten = QHBoxLayout()
 
@@ -113,12 +114,10 @@ class MyForm(QWidget):
         self.Combo_Box.addItem("Luftfeuchtigkeit")
         self.Combo_Box.addItem("P1")
         self.Combo_Box.addItem("P2")
-        self.Combo_Box.addItem("Gesamt")
         self.Combo_Box.setItemIcon(0, QIcon("assets\images\interface-weather-temperature-hot.png"))
         self.Combo_Box.setItemIcon(1, QIcon("assets\images\interface-weather-wind.png"))
         self.Combo_Box.setItemIcon(2, QIcon("assets\images\interface-weather-rain-drop.png"))
         self.Combo_Box.setItemIcon(3, QIcon("assets\images\co2-icon.svg"))
-        self.Combo_Box.setItemIcon(4, QIcon("assets\images\hippie-marijuana-weed.svg"))
         self.Combo_Box.setStyleSheet("QComboBox {\n"
         "  background-color: #FFFFFF;\n"
         "  border: 1px solid #CCCCCC;\n"
@@ -152,6 +151,11 @@ class MyForm(QWidget):
         # Grafik-Layout zum rechten Layout hinzufügen
         right_layout.addLayout(self.graph_layout)
 
+        
+        self.WerteLBL = QLabel("")
+        
+        right_layout.addWidget(self.WerteLBL)
+        
         # Rechtes Layout zur Gesamt-LayoutBox hinzufügen
         self.oben.addLayout(right_layout)
 
@@ -165,12 +169,11 @@ class MyForm(QWidget):
 
     def suchen_clicked(self):
         datum = self.calendar.selectedDate().toString("yyyy-MM-dd")
+        
         selected_value = self.Combo_Box.currentText()
         if selected_value == 'Temperatur':
             selected_value='temp'
         elif selected_value == 'Luftfeuchtigkeit':
-            selected_value='feuchtigkeit'
-        elif selected_value == 'Gesamt':
             selected_value='feuchtigkeit'
 
         try:
@@ -179,6 +182,11 @@ class MyForm(QWidget):
             print("Fehler beim Schreiben in die Log-Datei:", e)
         x = SQL.SELECT(datum, selected_value, 'DATUM')
         y = SQL.SELECT(datum, selected_value, 'WERT')
+        
+        # Durchschnittswerte etc hinzufügen
+        List = SQL.sql_min(datum,selected_value)
+        self.WerteLBL.setText('Minimum: ' + str(List[0]) + ' Maximum: ' + str(List[1]) + ' Durchschnitt: ' + str(List[2]))
+        
         if not x or not y:
             print("Die Listen sind leer.")
         else:
