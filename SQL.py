@@ -3,10 +3,10 @@ import csv
 import os
 import pathlib
 
-path = pathlib.Path('test.py').parent.resolve()
+path = pathlib.Path('SQL.py').parent.resolve()
 
 def listCSV():
-    path = pathlib.Path('test.py').parent.resolve()
+    path = pathlib.Path('SQL.py').parent.resolve()
     dir_path = f'{path}\sensor-data\\'
     res = []
     for path in os.listdir(dir_path):
@@ -26,7 +26,7 @@ def importtoDB(c,conn,label):
                 if sensor_type == 'DHT22':
                     #schreibe Daten in Table
                     c.execute("INSERT INTO DHT22 (sensor_id, sensor_type, timestamp, loc_id, lon, lat, feuchtigkeit, temp) VALUES (:sid, :stype, :time, :loc, :lon, :lat, :feucht, :temp)",
-                            {'sid': row[0], 'stype':row[1], 'time':row[5], 'loc':row[2], 'lat':row[3], 'lon':row[4], 'feucht':row[6], 'temp':row[7]}) 
+                            {'sid': row[0], 'stype':row[1], 'time':row[5], 'loc':row[2], 'lat':row[3], 'lon':row[4], 'feucht':row[7], 'temp':row[6]}) 
                     conn.commit()
                 elif sensor_type == 'SDS011':
                     #schreibe Daten in Table
