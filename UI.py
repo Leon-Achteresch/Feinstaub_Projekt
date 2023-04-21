@@ -200,7 +200,7 @@ class MyForm(QWidget):
             self.label.hide()
         else:
             self.label.setText("Download Data...")
-            download.download_days(0)
+            download.download_days(days_to_download)
             SQL.importtoDB(c, conn, self.label)
             
 class LineGraph(PlotWidget):

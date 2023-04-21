@@ -98,7 +98,7 @@ def getdays(c,conn):
 
     return days
 
-#Es wird überpeüft, ob der ausgewähle Tag i GUI in der Datenbank ist, wenn nicht wird er heruntergeladen
+#Es wird überpeüft, ob der ausgewähle Tag im GUI in der Datenbank ist, wenn nicht wird er heruntergeladen
 def checkdate(date,c,conn):
     c.execute("SELECT COUNT(timestamp) FROM DHT22 WHERE TIMESTAMP LIKE :KEY", {'KEY': date + '%'})  
     conn.commit()
@@ -118,8 +118,6 @@ def checkdate(date,c,conn):
         save(data, f'sensor-data/{date}_dht22_sensor_3660.csv')
         SQL.importtoDB(c, conn, data)
 #-------------------------------------------------------------------------------
-
-#def getavg():
 
 #if __name__ == '__main__':
 #    download_days(365)
