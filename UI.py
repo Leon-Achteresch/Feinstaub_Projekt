@@ -188,16 +188,19 @@ class MyForm(QWidget):
         self.WerteLBL.setText('Minimum: ' + str(List[0]) + ' Maximum: ' + str(List[1]) + ' Durchschnitt: ' + str(List[2]))
         
         if not x or not y:
-            print("Die Listen sind leer.")
+            self.label.setText("Die Listen sind leer.")
+            self.line_graph.plot(0, 0)  
         else:
             self.line_graph.plot(x, y)
+            self.label.setText("")
             
     def download_data(self):
         conn = sqlite3.connect("sensor-data.db")
         c = conn.cursor()
         days_to_download = download.getdays(c, conn)
-        if days_to_download == 0: 
-            self.label.hide()
+        
+        if days_to_download == 1: 
+            self.label.setText('')
         else:
             self.label.setText("Download Data...")
             download.download_days(days_to_download)
@@ -209,24 +212,25 @@ class LineGraph(PlotWidget):
 
     def plot(self, x, y):
         self.clear()
-        
-        axis = pg.AxisItem(orientation='bottom')
-        tick_values = []
-        tick_labels = []
-        time_format = '%H:%M:%S'
-        for timestamp in x:
-            dt = datetime.strptime(timestamp, time_format)
-            tick_values.append((dt - datetime(dt.year, dt.month, dt.day)).total_seconds())
-            tick_labels.append(dt.strftime('%H:%M'))
-        axis.setTicks([list(zip(tick_values, tick_labels))])
-        self.setAxisItems({'bottom': axis})
+        try:
+            axis = pg.AxisItem(orientation='bottom')
+            tick_values = []
+            tick_labels = []
+            time_format = '%H:%M:%S'
+            for timestamp in x:
+                dt = datetime.strptime(timestamp, time_format)
+                tick_values.append((dt - datetime(dt.year, dt.month, dt.day)).total_seconds())
+                tick_labels.append(dt.strftime('%H:%M'))
+            axis.setTicks([list(zip(tick_values, tick_labels))])
+            self.setAxisItems({'bottom': axis})
 
-        x = tick_values
-        #self.plotItem.setDownsampling(mode='peak')
-        #self.plotItem.setClipToView(True)
-        self.plotItem.plot(x, y, fillLevel=(True))
-        self.plotItem.vb.setLimits(xMin=min(x)-5, xMax=max(x)+5, yMin=min(y)-5, yMax=max(y)+5)
-        self.setTitle('Sensor Data')
+            x = tick_values
+            self.plotItem.plot(x, y, fillLevel=(True))
+            self.plotItem.vb.setLimits(xMin=min(x)-5, xMax=max(x)+5, yMin=min(y)-5, yMax=max(y)+5)
+            self.setTitle('Sensor Data')
+        except Exception as e:
+            self.label.setText(e)
+        
 
     def clear(self):
         self.plotItem.clear()
