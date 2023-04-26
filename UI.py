@@ -9,7 +9,6 @@ import sqlite3
 import threading
 import download
 import SQL
-#import SQL_Select
 from pyqtgraph import PlotWidget, AxisItem
 from datetime import datetime, timedelta
 import pyqtgraph as pg
@@ -23,6 +22,8 @@ class MyForm(QWidget):
         self.setWindowIcon(QtGui.QIcon('assets\images\hippie-marijuana-weed.svg'))
         self.setWindowTitle("Feinstaub Projekt")
         
+        #self.setStyleSheet("background-color: #C0FDFF;")
+
         shadow_effect = QGraphicsDropShadowEffect()
         shadow_effect.setBlurRadius(10)
         shadow_effect.setColor(QColor(0, 0, 0, 80))
@@ -31,13 +32,15 @@ class MyForm(QWidget):
         self.oben = QHBoxLayout()
         self.unten = QHBoxLayout()
 
+
         self.layout = QVBoxLayout()
 
         # Linkes Layout erstellen
         left_layout = QVBoxLayout()
-
+        #left_layout1 = QVBoxLayout()
         # Label für den Kalender erstellen
         self.label = QLabel("Wähle ein Datum:")
+        self.label.setStyleSheet("Color: #EE4540")
         font = QFont("Roboto", 20)
         self.label.setFont(font)
         left_layout.addWidget(self.label)
@@ -46,19 +49,44 @@ class MyForm(QWidget):
         self.calendar = QCalendarWidget()
         self.calendar.setGraphicsEffect(shadow_effect)
         self.calendar.setStyleSheet("QCalendarWidget {"
-                             "  border: none;"
-                             "  font-family: 'Roboto', sans-serif;"
-                             "  font-size: 16px;"
-                             "  border-radius: 10px;"
-                             "}"
-                             ""
-                             "QCalendarWidget QAbstractItemView {"
-                             "  selection-background-color: #db1414;"
-                             "  background-color: #fff;"
-                             "  border: none;"
-                             "  border-radius: 10px;"
-                             "  color: #333;"
-                             "}"
+                                    "  border: none;"
+                                    "  font-family: 'Roboto', sans-serif;"
+                                    "  font-size: 16px;"
+                                    "  color: black;"
+                                    "  border-radius: 20px;"
+                                    "}"
+                                    "QCalendarWidget QAbstractItemView:enabled {"#Grid
+                                    "  selection-background-color: #db1414;"
+                                    "  background-color: #ffffff;"
+                                    "  border: none;"
+                                    "  color: black;"
+                                    "  border-radius: 10px;"
+                                    "}"
+                                    "#qt_calendar_navigationbar"
+                                    "{"
+                                    "background-color: #00396c;"
+                                    " border-radius: 10px;"
+                                    " color: black;"
+                                    "}"
+                                    "#qt_calendar_prevmonth {"
+                                    "  background-color: transparent;"
+                                    "  icon-size: 30px;"
+                                    "  margin-left: 5px;"
+                                    "  border-radius: 20px;"
+                                    "  qproperty-icon: url(assets/images/interface-arrows-button-left.svg);"
+                                    "}"
+                                    "#qt_calendar_nextmonth {"
+                                    "  background-color: transparent;"
+                                    "  icon-size: 30px;"
+                                    "   margin-right: 5px;"
+                                    "  border-radius: 20px;"
+                                    "  qproperty-icon: url(assets/images/interface-arrows-button-right.svg);"
+                                    "}"
+                                    """#QSpinBox {
+                                    color: black;
+                                    selection-background-color: black;
+  	                                selection-color: black;
+                                    }"""
                              "")
 
         left_layout.addWidget(self.calendar)
@@ -67,45 +95,72 @@ class MyForm(QWidget):
         self.button = QPushButton("Suche")
         self.button.clicked.connect(self.suchen_clicked)
         self.button.setGraphicsEffect(shadow_effect)
-        self.button.setStyleSheet(""
-        " QPushButton {"
-        "  background-color: #2f80ed;"
-        "  border-radius: 10px;"
-        "  color: #fff;"
-        "  height: 50px;"
-        "  line-height: 1.5;"
-        "  outline: none;"
-        "  vertical-align: top;"
-        "  font-size: 16px;"
-        "  font-family: 'Roboto', sans-serif;"
-        "  white-space: nowrap;"
-        "}"
-        ""
-        "  QPushButton:hover {"
-        "    background-color: #3b8cf3;"
-        "  }"
-        "  QPushButton:pressed {"
-        "    background-color: #2567c9;"
-        "  }"
-        "")
+        self.button.setStyleSheet(
+            "QPushButton {"
+            "  border-radius: 10px;"
+            "  color: #fff;"
+            "  height: 50px;"
+            "  line-height: 1.5;"
+            "  outline: none;"
+            "  vertical-align: top;"
+            "  font-size: 16px;"
+            "  font-family: 'Roboto', sans-serif;"
+            "  white-space: nowrap;"
+            "  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
+            "    stop: 0 #ff8a00, stop: 1 #e52e71);"
+            "}"
+            ""
+            "QPushButton:hover {"
+            "  background-color: #3b8cf3;"
+            "}"
+            ""
+            "QPushButton:pressed {"
+            "  background-color: #2567c9;"
+            "}"
+        )
+
         left_layout.addWidget(self.button)
 
-        # Linkes Layout zur Gesamt-LayoutBox hinzufügen
-        self.oben.addLayout(left_layout)
+        #Frame erstellen
+        self.frame = QFrame()
+        #self.frame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame.setFrameStyle(QFrame.Shape.StyledPanel)
+        self.frame.setStyleSheet("QFrame{background-color: #2D142C; border: 0px solid black; border-radius: 20px;}")
+        self.frame.setLineWidth(3)
+        
+        self.frame.setLayout(left_layout)
+        self.oben.addWidget(self.frame)
+
+        self.frame4 = QFrame()
+        self.frame4.setFrameStyle(QFrame.Shape.StyledPanel)
+        self.frame4.setStyleSheet("QFrame{background-color: #2D142C; border: 0px solid black; border-radius: 20px;}")
+        self.frame4.setLineWidth(3)
+        
+        self.frame4.setLayout(left_layout)
+        self.oben.addWidget(self.frame4)
+
+        unten_layout = QVBoxLayout()
+        unten_layout1 = QVBoxLayout()
+        
 
         # Rechtes Layout erstellen
         right_layout = QVBoxLayout()
 
-        self.label = QLabel("Aktualisiere Daten")
+        self.labelInfo = QLabel("Aktualisiere Daten")
         font = QFont("Roboto", 10)
-        self.label.setFont(font)
-        self.unten.addWidget(self.label)
+        self.labelInfo.setStyleSheet("Color: #EE4540")
+        self.labelInfo.setFont(font)
+        unten_layout.addWidget(self.labelInfo)
+
+
+
 
         # Grafik-Layout erstellen
         self.graph_layout = QVBoxLayout()
 
         # ScatterGraph-Klasse erstellen und dem Layout hinzufügen
         self.line_graph = LineGraph()
+        self.line_graph.setBackground('transparent')
         self.graph_layout.addWidget(self.line_graph)
 
         self.Combo_Box = QComboBox()
@@ -123,6 +178,7 @@ class MyForm(QWidget):
         "  border: 1px solid #CCCCCC;\n"
         "  border-radius: 3px;\n"
         "  padding: 5px;\n"
+        "  margin: 10px;\n"
         "  min-width: 6em;\n"
         "  font-size: 14px;\n"
         "}\n"
@@ -134,17 +190,20 @@ class MyForm(QWidget):
         "  border-left-width: 1px;\n"
         "  border-left-color: #CCCCCC;\n"
         "  border-left-style: solid;\n"
-        "  border-top-right-radius: 3px;\n"
-        "  border-bottom-right-radius: 3px;\n"
-        "  background-color: #FFFFFF;\n"
+        "  border-top-right-radius: 30px;\n"
+        "  border-bottom-right-radius: 30px;\n"
         "}\n"
         "\n"
         "QComboBox::down-arrow {\n"
         "  image: url('assets/images/interface-arrows-button-down.png');\n"
-        "  width: 14px;\n"
-        "  height: 14px;\n"
+        "  width: 10px;\n"
+        "  height: 10px;\n"
+        "  margin: 10px;\n"
         "  padding-right: 1px;\n"
         "}\n"
+        "QComboBox QAbstractItemView {"
+        "background-color: white;"
+        "}"
         "")
         right_layout.addWidget(self.Combo_Box)
         
@@ -153,14 +212,44 @@ class MyForm(QWidget):
 
         
         self.WerteLBL = QLabel("")
+        self.WerteLBL.setStyleSheet("Color: #EE4540")
         
-        right_layout.addWidget(self.WerteLBL)
+        unten_layout1.addWidget(self.WerteLBL)
         
+        self.oben.addSpacing(25)
+
         # Rechtes Layout zur Gesamt-LayoutBox hinzufügen
-        self.oben.addLayout(right_layout)
+        self.frame1 = QFrame()
+        #self.frame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame1.setFrameStyle(QFrame.Shape.StyledPanel)
+        self.frame1.setStyleSheet("QFrame{background-color: #2D142C; border: 0px solid black; border-radius: 20px;}")
+        self.frame1.setLineWidth(3)
+       
+        self.frame1.setLayout(right_layout)
+        self.oben.addWidget(self.frame1)
 
         self.layout.addLayout(self.oben)
+
+        self.frame2 = QFrame()
+        
+        self.frame2.setFrameStyle(QFrame.Shape.StyledPanel)
+        self.frame2.setStyleSheet("QFrame{background-color: #2D142C; border: 0px solid black; border-radius: 10px;margin-left:20px}")
+        self.frame2.setFixedWidth(200)
+       
+        self.frame2.setLayout(unten_layout)
+        self.unten.addWidget(self.frame2)
+
+        self.frame3 = QFrame()
+        self.frame3.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame3.setStyleSheet("QFrame{background-color: #2D142C; border-radius: 10px;}")
+        self.frame3.setLineWidth(3)
+
+        self.frame3.setLayout(unten_layout1)
+        self.unten.addWidget(self.frame3)
+
         self.layout.addLayout(self.unten)
+
+
         self.setLayout(self.layout)
 
         # Thread für den Download erstellen und starten
@@ -188,11 +277,11 @@ class MyForm(QWidget):
         self.WerteLBL.setText('Minimum: ' + str(List[0]) + ' Maximum: ' + str(List[1]) + ' Durchschnitt: ' + str(List[2]))
         
         if not x or not y:
-            self.label.setText("Die Listen sind leer.")
-            self.line_graph.plot(0, 0)  
+            self.labelInfo.setText("Die Listen sind leer.")
+            self.line_graph.plot(0, 0, selected_value)  
         else:
-            self.line_graph.plot(x, y)
-            self.label.setText("")
+            self.line_graph.plot(x, y, selected_value)
+            self.labelInfo.setText("")
             
     def download_data(self):
         conn = sqlite3.connect("sensor-data.db")
@@ -200,17 +289,17 @@ class MyForm(QWidget):
         days_to_download = download.getdays(c, conn)
         
         if days_to_download == 1: 
-            self.label.setText('')
+            self.labelInfo.setText('')
         else:
-            self.label.setText("Download Data...")
-            download.download_days(days_to_download)
-            SQL.importtoDB(c, conn, self.label)
+            self.labelInfo.setText("Download Data...")
+            download.download_days(0)
+            SQL.importtoDB(c, conn, self.labelInfo)
             
 class LineGraph(PlotWidget):
     def __init__(self, parent=None):
         super(LineGraph, self).__init__(parent)
 
-    def plot(self, x, y):
+    def plot(self, x, y, selected_value):
         self.clear()
         try:
             axis = pg.AxisItem(orientation='bottom')
@@ -223,10 +312,15 @@ class LineGraph(PlotWidget):
                 tick_labels.append(dt.strftime('%H:%M'))
             axis.setTicks([list(zip(tick_values, tick_labels))])
             self.setAxisItems({'bottom': axis})
-
+            self.plotItem.setLabel('left',selected_value)
+            self.plotItem.setLabel('bottom','Uhrzeit')
+           # axis.setTickSpacing(1000000,1,1)
             x = tick_values
             self.plotItem.plot(x, y, fillLevel=(True))
-            self.plotItem.vb.setLimits(xMin=min(x)-5, xMax=max(x)+5, yMin=min(y)-5, yMax=max(y)+5)
+            if min(y)>0:
+                self.plotItem.vb.setLimits(xMin=min(x)-5, xMax=max(x)+5, yMin=0, yMax=max(y)+5)
+            else:
+               self.plotItem.vb.setLimits(xMin=min(x)-5, xMax=max(x)+5, yMin=min(y)-5, yMax=max(y)+5) 
             self.setTitle('Sensor Data')
         except Exception as e:
             self.label.setText(e)
@@ -236,6 +330,10 @@ class LineGraph(PlotWidget):
         self.plotItem.clear()
         
 if __name__ == '__main__':
+    
+    #Installiert alle nicht vorhandenen Packages
+    download.install_packages('requirements.txt')
+
     app = QApplication(sys.argv)
     form = MyForm()
     form.show()
