@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QComboBox, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QCalendarWidget, QLabel, QFrame, QProgressBar,QGraphicsDropShadowEffect
+from PyQt6.QtWidgets import QMainWindow, QApplication, QComboBox, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QCalendarWidget, QLabel, QFrame, QProgressBar,QGraphicsDropShadowEffect
 from PyQt6 import QtCore
 from PyQt6 import QtGui
 from PyQt6.QtGui import QFont, QIcon, QColor
@@ -22,8 +22,10 @@ class MyForm(QWidget):
         self.setWindowIcon(QtGui.QIcon('assets\images\hippie-marijuana-weed.svg'))
         self.setWindowTitle("Feinstaub Projekt")
         
-        #self.setStyleSheet("background-color: #C0FDFF;")
-
+        #self.setAutoFillBackground(True)
+        # palette = self.palette()
+        # palette.setColor(self.backgroundRole(), QtCore.Qt.GlobalColor.black)
+        # self.setPalette(palette)
         shadow_effect = QGraphicsDropShadowEffect()
         shadow_effect.setBlurRadius(10)
         shadow_effect.setColor(QColor(0, 0, 0, 80))
@@ -40,13 +42,17 @@ class MyForm(QWidget):
         #left_layout1 = QVBoxLayout()
         # Label für den Kalender erstellen
         self.label = QLabel("Wähle ein Datum:")
-        self.label.setStyleSheet("Color: #EE4540")
+        self.label.setStyleSheet("Color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #d406fe, stop: 1 #36c0ff);")
         font = QFont("Roboto", 20)
         self.label.setFont(font)
         left_layout.addWidget(self.label)
 
         # Kalender erstellen
         self.calendar = QCalendarWidget()
+        for d in (QtCore.Qt.DayOfWeek.Saturday, QtCore.Qt.DayOfWeek.Sunday,):
+            fmt = self.calendar.weekdayTextFormat(d)
+            fmt.setForeground(QtCore.Qt.GlobalColor.black)
+            self.calendar.setWeekdayTextFormat(d, fmt)
         self.calendar.setGraphicsEffect(shadow_effect)
         self.calendar.setStyleSheet("QCalendarWidget {"
                                     "  border: none;"
@@ -56,7 +62,7 @@ class MyForm(QWidget):
                                     "  border-radius: 20px;"
                                     "}"
                                     "QCalendarWidget QAbstractItemView:enabled {"#Grid
-                                    "  selection-background-color: #db1414;"
+                                    "  selection-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #d406fe, stop: 1 #36c0ff);"
                                     "  background-color: #ffffff;"
                                     "  border: none;"
                                     "  color: black;"
@@ -64,21 +70,25 @@ class MyForm(QWidget):
                                     "}"
                                     "#qt_calendar_navigationbar"
                                     "{"
-                                    "background-color: #00396c;"
+                                    "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
+                                    "    stop: 0 #d406fe, stop: 1 #36c0ff);"
                                     " border-radius: 10px;"
                                     " color: black;"
+                                    "margin-bottom: 3px;"
                                     "}"
                                     "#qt_calendar_prevmonth {"
                                     "  background-color: transparent;"
                                     "  icon-size: 30px;"
-                                    "  margin-left: 5px;"
+                                    #"  margin: 5px;"
+                                    "margin-bottom: 3px;"
                                     "  border-radius: 20px;"
                                     "  qproperty-icon: url(assets/images/interface-arrows-button-left.svg);"
                                     "}"
                                     "#qt_calendar_nextmonth {"
                                     "  background-color: transparent;"
                                     "  icon-size: 30px;"
-                                    "   margin-right: 5px;"
+                                    #"   margin: 5px;"
+                                    "margin-bottom: 3px;"
                                     "  border-radius: 20px;"
                                     "  qproperty-icon: url(assets/images/interface-arrows-button-right.svg);"
                                     "}"
@@ -107,7 +117,7 @@ class MyForm(QWidget):
             "  font-family: 'Roboto', sans-serif;"
             "  white-space: nowrap;"
             "  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-            "    stop: 0 #ff8a00, stop: 1 #e52e71);"
+            "    stop: 0 #d406fe, stop: 1 #36c0ff);"
             "}"
             ""
             "QPushButton:hover {"
@@ -125,19 +135,22 @@ class MyForm(QWidget):
         self.frame = QFrame()
         #self.frame.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame.setFrameStyle(QFrame.Shape.StyledPanel)
-        self.frame.setStyleSheet("QFrame{background-color: #2D142C; border: 0px solid black; border-radius: 20px;}")
+        #self.frame.setStyleSheet(".QFrame{background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #222222, stop: 1 #515151); border: 0px solid black; border-radius: 20px;}")
+        self.frame.setStyleSheet(".QFrame{background-color: #f7f7f7; border: 0px solid black; border-radius: 20px;}")
+        self.frame.frameShadow = QGraphicsDropShadowEffect(self.frame)
+        self.frame.frameShadow.setBlurRadius(5)
         self.frame.setLineWidth(3)
         
         self.frame.setLayout(left_layout)
         self.oben.addWidget(self.frame)
 
-        self.frame4 = QFrame()
-        self.frame4.setFrameStyle(QFrame.Shape.StyledPanel)
-        self.frame4.setStyleSheet("QFrame{background-color: #2D142C; border: 0px solid black; border-radius: 20px;}")
-        self.frame4.setLineWidth(3)
+        # self.frame4 = QFrame()
+        # self.frame4.setFrameStyle(QFrame.Shape.StyledPanel)
+        # self.frame4.setStyleSheet("QFrame{background-color: #494B4D; border: 0px solid black; border-radius: 20px;}")
+        # self.frame4.setLineWidth(3)
         
-        self.frame4.setLayout(left_layout)
-        self.oben.addWidget(self.frame4)
+        # self.frame4.setLayout(left_layout)
+        # self.oben.addWidget(self.frame4)
 
         unten_layout = QVBoxLayout()
         unten_layout1 = QVBoxLayout()
@@ -160,7 +173,7 @@ class MyForm(QWidget):
 
         # ScatterGraph-Klasse erstellen und dem Layout hinzufügen
         self.line_graph = LineGraph()
-        self.line_graph.setBackground('transparent')
+        self.line_graph.setBackground('#f7f7f7')
         self.graph_layout.addWidget(self.line_graph)
 
         self.Combo_Box = QComboBox()
@@ -222,7 +235,7 @@ class MyForm(QWidget):
         self.frame1 = QFrame()
         #self.frame.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame1.setFrameStyle(QFrame.Shape.StyledPanel)
-        self.frame1.setStyleSheet("QFrame{background-color: #2D142C; border: 0px solid black; border-radius: 20px;}")
+        self.frame1.setStyleSheet(".QFrame{background-color: #f7f7f7; border: 0px solid black; border-radius: 20px;}")
         self.frame1.setLineWidth(3)
        
         self.frame1.setLayout(right_layout)
@@ -233,7 +246,7 @@ class MyForm(QWidget):
         self.frame2 = QFrame()
         
         self.frame2.setFrameStyle(QFrame.Shape.StyledPanel)
-        self.frame2.setStyleSheet("QFrame{background-color: #2D142C; border: 0px solid black; border-radius: 10px;margin-left:20px}")
+        self.frame2.setStyleSheet(".QFrame{background-color: #f7f7f7; border: 0px solid black; border-radius: 10px;}")   
         self.frame2.setFixedWidth(200)
        
         self.frame2.setLayout(unten_layout)
@@ -241,7 +254,7 @@ class MyForm(QWidget):
 
         self.frame3 = QFrame()
         self.frame3.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame3.setStyleSheet("QFrame{background-color: #2D142C; border-radius: 10px;}")
+        self.frame3.setStyleSheet(".QFrame{background-color: #f7f7f7; border-radius: 10px;}")
         self.frame3.setLineWidth(3)
 
         self.frame3.setLayout(unten_layout1)
