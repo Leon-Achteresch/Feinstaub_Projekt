@@ -54,6 +54,7 @@ class MyForm(QWidget):
             fmt.setForeground(QtCore.Qt.GlobalColor.black)
             self.calendar.setWeekdayTextFormat(d, fmt)
         self.calendar.setGraphicsEffect(shadow_effect)
+       
         self.calendar.setStyleSheet("QCalendarWidget {"
                                     "  border: none;"
                                     "  font-family: 'Roboto', sans-serif;"
@@ -74,21 +75,21 @@ class MyForm(QWidget):
                                     "    stop: 0 #d406fe, stop: 1 #36c0ff);"
                                     " border-radius: 10px;"
                                     " color: black;"
-                                    "margin-bottom: 3px;"
+                                    "   margin-bottom: 3px;"
                                     "}"
                                     "#qt_calendar_prevmonth {"
                                     "  background-color: transparent;"
                                     "  icon-size: 30px;"
-                                    #"  margin: 5px;"
-                                    "margin-bottom: 3px;"
+                                    "  margin: 5px;"
+                                    "   margin-bottom: 3px;"
                                     "  border-radius: 20px;"
                                     "  qproperty-icon: url(assets/images/interface-arrows-button-left.svg);"
                                     "}"
                                     "#qt_calendar_nextmonth {"
                                     "  background-color: transparent;"
                                     "  icon-size: 30px;"
-                                    #"   margin: 5px;"
-                                    "margin-bottom: 3px;"
+                                    "   margin: 5px;"
+                                    "   margin-bottom: 3px;"
                                     "  border-radius: 20px;"
                                     "  qproperty-icon: url(assets/images/interface-arrows-button-right.svg);"
                                     "}"
@@ -133,12 +134,12 @@ class MyForm(QWidget):
 
         #Frame erstellen
         self.frame = QFrame()
-        #self.frame.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame.setFrameStyle(QFrame.Shape.StyledPanel)
-        #self.frame.setStyleSheet(".QFrame{background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #222222, stop: 1 #515151); border: 0px solid black; border-radius: 20px;}")
+
+        self.frame.setFrameStyle(QFrame.Shape.StyledPanel | QFrame.Shadow.Raised)
+        
         self.frame.setStyleSheet(".QFrame{background-color: #f7f7f7; border: 0px solid black; border-radius: 20px;}")
-        self.frame.frameShadow = QGraphicsDropShadowEffect(self.frame)
-        self.frame.frameShadow.setBlurRadius(5)
+        # self.frame.frameShadow = QGraphicsDropShadowEffect(self.frame)
+        # self.frame.frameShadow.setBlurRadius(500)
         self.frame.setLineWidth(3)
         
         self.frame.setLayout(left_layout)
@@ -234,10 +235,11 @@ class MyForm(QWidget):
         # Rechtes Layout zur Gesamt-LayoutBox hinzufügen
         self.frame1 = QFrame()
         #self.frame.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame1.setFrameStyle(QFrame.Shape.StyledPanel)
+        self.frame1.setFrameStyle(QFrame.Shape.StyledPanel | QFrame.Shadow.Plain)
         self.frame1.setStyleSheet(".QFrame{background-color: #f7f7f7; border: 0px solid black; border-radius: 20px;}")
         self.frame1.setLineWidth(3)
-       
+        
+        
         self.frame1.setLayout(right_layout)
         self.oben.addWidget(self.frame1)
 
