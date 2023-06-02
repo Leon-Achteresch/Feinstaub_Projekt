@@ -4,7 +4,9 @@ import glob
 import sqlite3
 import SQL
 
-BASE = "http://archive.luftdaten.info"
+BASE = "https://archive.sensor.community"
+# conn3 = sqlite3.connect("sensor-data.db")
+# c3 = conn3.cursor()
 
 def download(url):
     """
@@ -33,7 +35,14 @@ def download_days(number_of_days):
 
     for i in range(1, number_of_days + 1): # no data for today
         current_date = datetime.date.today() - i * one_day
-        base_url = f'{BASE}/{current_date}/{current_date}'
+        temp = f'{current_date}'
+        now = datetime.date.today()
+        nowstr = f'{now}' 
+        if temp[0:4] == nowstr[0:4]:
+            base_url = f'{BASE}/{current_date}/{current_date}'
+        else:
+            base_url = f'{BASE}/'+ temp[0:4] + f'/{current_date}/{current_date}'
+
 
         for sensor in ['sds011_sensor_3659', 'dht22_sensor_3660']:
             url = f'{base_url}_{sensor}.csv'
@@ -51,7 +60,7 @@ def getdays(c,conn):
     current_date = datetime.date.today()
     days = 0
 
-    #Es wird überprüft ob die DB gefüllt ist--------------------------------------------------------
+    #Es wird überprüft ob die DB gefüllt ist------------------------------------------------------
     c.execute("SELECT COUNT ( DISTINCT (substr(timestamp, 0, 11))) FROM DHT22", {})  
     conn.commit()
     record = c.fetchone()
@@ -71,7 +80,7 @@ def getdays(c,conn):
     #---------------------------------------------------------------------------------------------
 
     #Es wird berechnet wie viele Tage seit dem letzten Datum in der DB vergangen sind
-    while lastdate < current_date:
+    while lastdate < current_date - one_day:
         days +=1
         current_date = datetime.date.today() - days * one_day
     #---------------------------------------------------------------------------------------------
@@ -82,11 +91,11 @@ def getdays(c,conn):
         #current_date = datetime.date.today() - days * one_day
     
     #Es wird der letzte Tag gelöscht damit kein halber Tag in der DB steht------------------------
-    date = f"{lastdate}"
-    c.execute("DELETE FROM DHT22 WHERE timestamp LIKE :date", {'date':date + '%'}) 
-    conn.commit()
-    c.execute("DELETE FROM SDS011 WHERE timestamp > :date", {'date':date + '%'}) 
-    conn.commit()
+    # date = f"{lastdate}"
+    # c.execute("DELETE FROM DHT22 WHERE timestamp LIKE :date", {'date':date + '%'}) 
+    # conn.commit()
+    # c.execute("DELETE FROM SDS011 WHERE timestamp > :date", {'date':date + '%'}) 
+    # conn.commit()
     #---------------------------------------------------------------------------------------------
 
     return days
@@ -96,7 +105,12 @@ def checkdate(date,c,conn):
     c.execute("SELECT COUNT(timestamp) FROM DHT22 WHERE TIMESTAMP LIKE :KEY", {'KEY': date + '%'})  
     conn.commit()
     record = c.fetchone()
-    base_url = f'{BASE}/{date}/{date}'
+    now = datetime.date.today()
+    nowstr = f'{now}' 
+    if date == nowstr[0:4]:
+        base_url = f'{BASE}/{date}/{date}'
+    else:
+        base_url = f'{BASE}/'+ date[0:4] + f'/{date}/{date}'
     if record[0] == 0:
         url = f'{base_url}_sds011_sensor_3659.csv'
         data = str(download(url), encoding='UTF-8')
@@ -107,12 +121,12 @@ def checkdate(date,c,conn):
         SQL.importtoDB(c, conn, data)
 #-------------------------------------------------------------------------------
 
-#def getavg():
-
-
 # if __name__ == '__main__':
-#     download_days(getdays())
-
+#    download_days(365)
+#     c3.execute("DELETE FROM DHT22 WHERE ref >= 0", {}) 
+#     conn3.commit()
+#     c3.execute("DELETE FROM SDS011 WHERE ref >=0", {}) 
+#     conn3.commit()
 import subprocess
 import sys
 
@@ -130,7 +144,6 @@ def install_packages(requirements_file):
                 subprocess.check_call(cmd)
             except subprocess.CalledProcessError as e:
                 print(f"Fehler beim installieren von {package}: {str(e)}")
-
 
 
 

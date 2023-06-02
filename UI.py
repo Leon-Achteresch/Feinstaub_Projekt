@@ -12,6 +12,7 @@ import SQL
 from pyqtgraph import PlotWidget, AxisItem
 from datetime import datetime, timedelta
 import pyqtgraph as pg
+import exportToXML
 
 conn2 = sqlite3.connect("sensor-data.db")
 c2 = conn2.cursor()
@@ -63,7 +64,7 @@ class MyForm(QWidget):
                                     "}"
                                     "QCalendarWidget QAbstractItemView:enabled {"#Grid
                                     "  selection-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #d406fe, stop: 1 #36c0ff);"
-                                    "  background-color: #ffffff;"
+                                    "  background-color: #f7f7f7;"
                                     "  border: none;"
                                     "  color: black;"
                                     "  border-radius: 10px;"
@@ -121,11 +122,11 @@ class MyForm(QWidget):
             "}"
             ""
             "QPushButton:hover {"
-            "  background-color: #3b8cf3;"
+            "  background-color: #d406fe;"
             "}"
             ""
             "QPushButton:pressed {"
-            "  background-color: #2567c9;"
+            "  background-color: #d406fe;"
             "}"
         )
 
@@ -271,7 +272,8 @@ class MyForm(QWidget):
 
     def suchen_clicked(self):
         datum = self.calendar.selectedDate().toString("yyyy-MM-dd")
-        
+        exportToXML.create_XML(datum, c2, conn2)
+        download.checkdate(datum, c2, conn2)
         selected_value = self.Combo_Box.currentText()
         if selected_value == 'Temperatur':
             selected_value='temp'
@@ -282,30 +284,33 @@ class MyForm(QWidget):
             log.writelog("Datum ausgewählt: " + datum, selected_value)
         except Exception as e:
             print("Fehler beim Schreiben in die Log-Datei:", e)
+
         x = SQL.SELECT(datum, selected_value, 'DATUM')
         y = SQL.SELECT(datum, selected_value, 'WERT')
         
         # Durchschnittswerte etc hinzufügen
         List = SQL.sql_min(datum,selected_value)
         self.WerteLBL.setText('Minimum: ' + str(List[0]) + ' Maximum: ' + str(List[1]) + ' Durchschnitt: ' + str(List[2]))
-        
+        selected_value = self.Combo_Box.currentText()
         if not x or not y:
             self.labelInfo.setText("Die Listen sind leer.")
             self.line_graph.plot(0, 0, selected_value)  
         else:
             self.line_graph.plot(x, y, selected_value)
             self.labelInfo.setText("")
+
+       
             
     def download_data(self):
         conn = sqlite3.connect("sensor-data.db")
         c = conn.cursor()
         days_to_download = download.getdays(c, conn)
         
-        if days_to_download == 1: 
+        if days_to_download <= 1: 
             self.labelInfo.setText('')
         else:
             self.labelInfo.setText("Download Data...")
-            download.download_days(0)
+            download.download_days(days_to_download)
             SQL.importtoDB(c, conn, self.labelInfo)
             
 class LineGraph(PlotWidget):
@@ -327,7 +332,6 @@ class LineGraph(PlotWidget):
             self.setAxisItems({'bottom': axis})
             self.plotItem.setLabel('left',selected_value)
             self.plotItem.setLabel('bottom','Uhrzeit')
-           # axis.setTickSpacing(1000000,1,1)
             x = tick_values
             self.plotItem.plot(x, y, fillLevel=(True))
             if min(y)>0:
@@ -351,5 +355,7 @@ if __name__ == '__main__':
     form = MyForm()
     form.show()
     sys.exit(app.exec())
+
+
          
 
