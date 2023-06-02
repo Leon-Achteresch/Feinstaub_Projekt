@@ -6,8 +6,10 @@ path = pathlib.Path('SQL.py').parent.resolve()
 def create_XML(date, c, conn):
 
     root = ET.Element("sensordata")
-    humidities = ET.SubElement(root, 'humidities')
-    temperatures = ET.SubElement(root, 'temperatures')
+    DHT22 = ET.SubElement(root, 'DHT22')
+    SDS011 = ET.SubElement(root, 'SDS011')
+    humidities = ET.SubElement(DHT22, 'humidities')
+    temperatures = ET.SubElement(DHT22, 'temperatures')
     
     c.execute("SELECT feuchtigkeit, timestamp, temp FROM DHT22 WHERE TIMESTAMP LIKE :KEY", {'KEY': date + '%'})
     rows = c.fetchall()
@@ -21,8 +23,8 @@ def create_XML(date, c, conn):
         temp.set("date", str(row[1]))  
         temp.text = str(row[2])
 
-    particles1 = ET.SubElement(root, 'particles1')
-    particles2 = ET.SubElement(root, 'particles2')
+    particles1 = ET.SubElement(SDS011, 'particles1')
+    particles2 = ET.SubElement(SDS011, 'particles2')
 
     c.execute("SELECT p1, p2, timestamp FROM SDS011 WHERE TIMESTAMP LIKE :KEY", {'KEY': date + '%'})
     rows = c.fetchall()
@@ -40,7 +42,7 @@ def create_XML(date, c, conn):
     #    tree.write(f, encoding='unicode')
     #f.close()
     xmlstr = minidom.parseString(ET.tostring(root)).toprettyxml(indent=" ")
-    with open(f"{path}\{date}.xml", "w") as f:
+    with open(f"{path}\XML\{date}.xml", "w") as f:
         f.write(xmlstr)
 
 
