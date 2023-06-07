@@ -46,4 +46,34 @@ def create_XML(date, c, conn):
         f.write(xmlstr)
 
 
+#chatGPT promt  
+# erstelle ein bespiele xml dokument mit ElementTree
+
+# import xml.etree.ElementTree as ET
+
+# # Ein Element für das Root-Tag erstellen
+# root = ET.Element("Kontakte")
+
+# # Ein Kind-Element erstellen und zum Root hinzufügen
+# kontakt1 = ET.SubElement(root, "Kontakt")
+# name1 = ET.SubElement(kontakt1, "Name")
+# name1.text = "John Doe"
+# email1 = ET.SubElement(kontakt1, "Email")
+# email1.text = "john@example.com"
+
+# # Ein weiteres Kind-Element erstellen und zum Root hinzufügen
+# kontakt2 = ET.SubElement(root, "Kontakt")
+# name2 = ET.SubElement(kontakt2, "Name")
+# name2.text = "Jane Smith"
+# email2 = ET.SubElement(kontakt2, "Email")
+# email2.text = "jane@example.com"
+
+# # XML-Dokument erstellen
+# tree = ET.ElementTree(root)
+
+# # XML-Dokument in eine Datei schreiben
+# tree.write("kontakte.xml")
+
+
+
 
