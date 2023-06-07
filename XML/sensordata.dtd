@@ -1,0 +1,15 @@
+<!ELEMENT sensordata (DHT22, SDS011)>
+<!ELEMENT DHT22 (humidities, temperatures)>
+<!ELEMENT humidities (hum+)>
+<!ELEMENT hum (#PCDATA)>
+<!ATTLIST hum date CDATA #REQUIRED>
+<!ELEMENT temperatures (temp+)>
+<!ELEMENT temp (#PCDATA)>
+<!ATTLIST temp date CDATA #REQUIRED>
+<!ELEMENT SDS011 (particles1, particles2)>
+<!ELEMENT particles1 (p1+)>
+<!ELEMENT p1 (#PCDATA)>
+<!ATTLIST p1 date CDATA #REQUIRED>
+<!ELEMENT particles2 (p2+)>
+<!ELEMENT p2 (#PCDATA)>
+<!ATTLIST p2 date CDATA #REQUIRED>

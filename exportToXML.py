@@ -38,12 +38,39 @@ def create_XML(date, c, conn):
         p2.text = str(row[1])
 
     tree = ET.ElementTree(root)
-    #with open(f'{path}\{date}.xml', 'w') as f:
-    #    tree.write(f, encoding='unicode')
-    #f.close()
-    xmlstr = minidom.parseString(ET.tostring(root)).toprettyxml(indent=" ")
+
+    xml_declaration = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    dtd_declaration = '<!DOCTYPE sensordata SYSTEM "sensordata.dtd">\n'
+    xml_content = minidom.parseString(ET.tostring(root)).toprettyxml(indent=" ")#ET.tostring(root, encoding='utf-8').decode()
+    index = 0
+    for i in xml_content:
+        index +=1
+        if i == "\n":
+            xml_content = xml_content[index: len(xml_content)]
+            break
+        
+    xml_with_dtd = f"{xml_declaration}{dtd_declaration}{xml_content}"
     with open(f"{path}\XML\{date}.xml", "w") as f:
-        f.write(xmlstr)
+        f.write(xml_with_dtd)
+
+
+
+# DTD
+# <!ELEMENT sensordata (DHT22, SDS011)>
+# <!ELEMENT DHT22 (humidities, temperatures)>
+# <!ELEMENT humidities (hum+)>
+# <!ELEMENT hum (#PCDATA)>
+# <!ATTLIST hum date CDATA #REQUIRED>
+# <!ELEMENT temperatures (temp+)>
+# <!ELEMENT temp (#PCDATA)>
+# <!ATTLIST temp date CDATA #REQUIRED>
+# <!ELEMENT SDS011 (particles1, particles2)>
+# <!ELEMENT particles1 (p1+)>
+# <!ELEMENT p1 (#PCDATA)>
+# <!ATTLIST p1 date CDATA #REQUIRED>
+# <!ELEMENT particles2 (p2+)>
+# <!ELEMENT p2 (#PCDATA)>
+# <!ATTLIST p2 date CDATA #REQUIRED>
 
 
 #chatGPT promt  
